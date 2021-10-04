@@ -19,6 +19,5 @@ function selectSort($numbers)
 }
 
 $numbers = [2, 9, 8, 5, 6, 1, 3, 4, 10, 7];
-echo join(",", selectSort($numbers));
-echo PHP_EOL;
+echo join(",", selectSort($numbers)), PHP_EOL;
 ?>
