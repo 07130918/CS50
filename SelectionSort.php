@@ -1,4 +1,5 @@
 <?php
+// 選択ソート
 // 計算量O(n^2)
 function selectSort($numbers)
 {
