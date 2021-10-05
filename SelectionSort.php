@@ -4,15 +4,18 @@
 function selectSort($numbers)
 {
     for ($i = 0; $i < count($numbers) - 1; $i++) {
+        // 最小値を先頭に仮置き
         $min = $numbers[$i];
-        $num_index = $i;
-        for ($j = $num_index + 1; $j < count($numbers); $j++) {
+        $min_index = $i;
+        for ($j = $min_index + 1; $j < count($numbers); $j++) {
+            // 最小値が新たに発見された場合の数値とインデックスを記憶
             if ($min > $numbers[$j]) {
-                $num_index = $j;
+                $min_index = $j;
                 $min = $numbers[$j];
             }
         }
-        $numbers[$num_index] = $numbers[$i];
+        // 最小値と仮置きされていた先頭の数値を交換
+        $numbers[$min_index] = $numbers[$i];
         $numbers[$i] = $min;
     }
     return $numbers;
