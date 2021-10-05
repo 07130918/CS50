@@ -6,7 +6,7 @@ function selectSort($numbers)
     for ($i = 0; $i < count($numbers) - 1; $i++) {
         $min = $numbers[$i];
         $num_index = $i;
-        for ($j = $num_index++; $j < count($numbers); $j++) {
+        for ($j = $num_index + 1; $j < count($numbers); $j++) {
             if ($min > $numbers[$j]) {
                 $num_index = $j;
                 $min = $numbers[$j];
