@@ -1,5 +1,5 @@
 <?php
-// 計算量O(), Ω()
+// 計算量O(n^2), Ω(nlogn)
 // 基準値を決めてそれより大きいか小さいかを繰り返す
 
 function quick_sort(array $array): array {
