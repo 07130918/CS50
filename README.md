@@ -9,4 +9,6 @@ https://www.cs.usfca.edu/~galles/visualization/ComparisonSort.html
   選択ソート
   バブルソート
   再帰
+  マージソート
+  クイックソート
 ```
