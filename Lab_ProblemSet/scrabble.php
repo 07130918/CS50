@@ -22,11 +22,10 @@ function compute_score(string $word): int {
     $word = strtolower($word);
     $score = 0;
     for ($i=0; $i < strlen($word); $i++) {
-        for ($j=0; $j < count($alphabet); $j++) {
-            if ($alphabet[$j] === $word[$i]) {
-                $score += $POINTS[$j];
-            }
-        }
+        if (!ctype_alpha($word[$i])) continue;
+
+        $alphabet_index = array_search(($word[$i]), $alphabet);
+        $score += $POINTS[$alphabet_index];
     }
     return $score;
 }
