@@ -18,7 +18,7 @@ function main(string $key): int {
 }
 
 
-if (strlen($argv[1]) !=26 ) return 1;
+if (strlen($argv[1]) != 26 ) return 1;
 
 main($argv[1]);
 // test key:YTNSHKVEFXRBAUQZCLWDMIPGJO
