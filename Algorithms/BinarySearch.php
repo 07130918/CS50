@@ -37,7 +37,7 @@ function binary_search_recursion(array $numbers, int $target) {
     // ターゲットに配列最大値より大きい自然数が来た時ガード
     if (count($numbers) === 1 && $numbers[0] != $target) return 1;
 
-    $half = count($numbers) / 2;
+    $half = (int)(count($numbers) / 2);
 
     if ($numbers == null) {
         return 1;
