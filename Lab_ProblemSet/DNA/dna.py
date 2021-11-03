@@ -1,3 +1,5 @@
+# DNA塩基配列から個人を特定するプログラム
+# https://cs50.jp/x/2021/week6/problem-set/dna/
 import csv
 import sys
 
