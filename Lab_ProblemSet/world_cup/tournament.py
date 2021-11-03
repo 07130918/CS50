@@ -1,4 +1,4 @@
-# https: // cs50.jp/x/2021/week6/lab/
+# https://cs50.jp/x/2021/week6/lab/
 # Simulate a sports tournament
 
 import csv
