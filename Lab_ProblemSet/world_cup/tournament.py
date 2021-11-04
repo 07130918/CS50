@@ -28,10 +28,9 @@ def main():
     # TODO: Simulate N tournaments and keep track of win counts
     for _ in range(N):
         winner = simulate_tournament(teams)
-        if winner['team'] in counts:
-            counts[winner['team']] += 1
-        else:
-            counts[winner['team']] = 1
+        if winner['team'] not in counts:
+            counts[winner['team']] = 0
+        counts[winner['team']] += 1
 
     # Print each team's chances of winning, according to simulation
     for team in sorted(counts, key=lambda team: counts[team], reverse=True):
