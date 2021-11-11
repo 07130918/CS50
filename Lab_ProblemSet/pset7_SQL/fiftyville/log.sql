@@ -57,7 +57,7 @@ WHERE passport_number IN (
     WHERE year = 2020 AND month = 7 AND day = 28 AND duration < 60
 );
 
--- 絞り込み1と2で1レコード重なるためその人が犯人"Ernest"
+-- 絞り込み1と2(3人の証言)で1レコード重なるためその人が犯人"Ernest"
 
 -- 共犯探し
 -- Ernestが事件の日誰に電話を掛けたを特定
