@@ -11,7 +11,6 @@
             document.addEventListener('DOMContentLoaded', listen);
 
             function listen() {
-                // part1
                 let copyButton = document.querySelector('#copyButton');
                 let pasteButton = document.querySelector('#pasteButton');
                 let unalterButton = document.querySelector('#unalterButton');
@@ -40,6 +39,19 @@
                     otherEle.style.backgroundColor = '';
                 });
             }
+
+            // part2
+            function check() {
+                let answerEle = document.querySelector('#serviceName');
+                let resultText2 = document.querySelector('#section2Result');
+                if (answerEle.value.toLowerCase() === 'youtube') {
+                    answerEle.style.backgroundColor = 'green';
+                    resultText2.innerHTML = 'Correct!';
+                } else {
+                    answerEle.style.backgroundColor = 'red';
+                    resultText2.innerHTML = 'Incorrect';
+                }
+            }
         </script>
 
     </head>
@@ -65,9 +77,13 @@
             <div class="section">
                 <h2>Part 2: Free Response</h2>
                 <hr>
-
                 <!-- TODO: Add free response question here -->
-
+                <h3>What's the service name? that's a No.1 video platform in the world</h3>
+                <form onsubmit="check(); return false;">
+                    <input id="serviceName" type="text" autocomplete="off" autofocus placeholder="Name">
+                    <input type="submit">
+                </form>
+                <h3 id="section2Result"></h3>
             </div>
 
         </div>
