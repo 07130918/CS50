@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
+        <link href="styles.css" rel="stylesheet">
+        <title>Trivia!</title>
+
+        <script>
+            // TODO: Add code to check answers to questions
+            function buttonChangeColor(copyButton, pasteButton, unalterButton) {
+                let resultText = document.querySelector('#section1Result');
+                let buttons = document.querySelectorAll('button');
+                buttons.forEach(button => {
+                    button.onclick = function () {
+                         if (button.id === 'copyButton') {
+                            button.style.backgroundColor = 'green';
+                            resultText.innerHTML = 'Correct!'
+                            pasteButton.style.backgroundColor = '';
+                            unalterButton.style.backgroundColor = '';
+                        } else if (button.id === 'pasteButton') {
+                            button.style.backgroundColor = 'red';
+                            resultText.innerHTML = 'Incorrect'
+                            copyButton.style.backgroundColor = '';
+                            unalterButton.style.backgroundColor = '';
+                        } else {
+                            button.style.backgroundColor = 'red';
+                            resultText.innerHTML = 'Incorrect'
+                            copyButton.style.backgroundColor = '';
+                            pasteButton.style.backgroundColor = '';
+                        }
+                    }
+                });
+            }
+
+            function listen() {
+                let copyButton = document.querySelector('#copyButton');
+                let pasteButton = document.querySelector('#pasteButton');
+                let unalterButton = document.querySelector('#unalterButton');
+                buttonChangeColor(copyButton, pasteButton, unalterButton);
+            }
+
+            document.addEventListener('DOMContentLoaded', listen);
+        </script>
+
+    </head>
+    <body>
+
+        <div class="jumbotron">
+            <h1>Trivia!</h1>
+        </div>
+
+        <div class="container">
+
+            <div class="section">
+                <h2>Part 1: Multiple Choice </h2>
+                <hr>
+                <!-- TODO: Add multiple choice question here -->
+                <h3>Which function works if you put command key and C key</h3>
+                <button type="button" id="copyButton">copy</button>
+                <button type="button" id="pasteButton">paste</button>
+                <button type="button" id="unalterButton">unalter</button>
+                <h3 id="section1Result"></h3>
+            </div>
+
+            <div class="section">
+                <h2>Part 2: Free Response</h2>
+                <hr>
+
+                <!-- TODO: Add free response question here -->
+
+            </div>
+
+        </div>
+    </body>
+</html>
