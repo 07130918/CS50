@@ -8,39 +8,38 @@
 
         <script>
             // TODO: Add code to check answers to questions
-            function buttonChangeColor(copyButton, pasteButton, unalterButton) {
-                let resultText = document.querySelector('#section1Result');
-                let buttons = document.querySelectorAll('button');
-                buttons.forEach(button => {
-                    button.onclick = function () {
-                         if (button.id === 'copyButton') {
-                            button.style.backgroundColor = 'green';
-                            resultText.innerHTML = 'Correct!'
-                            pasteButton.style.backgroundColor = '';
-                            unalterButton.style.backgroundColor = '';
-                        } else if (button.id === 'pasteButton') {
-                            button.style.backgroundColor = 'red';
-                            resultText.innerHTML = 'Incorrect'
-                            copyButton.style.backgroundColor = '';
-                            unalterButton.style.backgroundColor = '';
-                        } else {
-                            button.style.backgroundColor = 'red';
-                            resultText.innerHTML = 'Incorrect'
-                            copyButton.style.backgroundColor = '';
-                            pasteButton.style.backgroundColor = '';
-                        }
-                    }
-                });
-            }
+            document.addEventListener('DOMContentLoaded', listen);
 
             function listen() {
+                // part1
                 let copyButton = document.querySelector('#copyButton');
                 let pasteButton = document.querySelector('#pasteButton');
                 let unalterButton = document.querySelector('#unalterButton');
-                buttonChangeColor(copyButton, pasteButton, unalterButton);
+                eventForking([copyButton, pasteButton, unalterButton]);
             }
 
-            document.addEventListener('DOMContentLoaded', listen);
+            function eventForking(buttons) {
+                buttons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        if (this.id === 'copyButton') {
+                            showResult(this, 'green', 'Correct!', [pasteButton, unalterButton]);
+                        } else if (this.id === 'pasteButton') {
+                            showResult(this, 'red', 'Inorrect', [copyButton, unalterButton]);
+                        } else {
+                            showResult(this, 'red', 'Inorrect', [copyButton, pasteButton]);
+                        }
+                    });
+                });
+            }
+
+            function showResult(self, color, result, otherEles) {
+                let resultText = document.querySelector('#section1Result');
+                self.style.backgroundColor = color;
+                resultText.innerHTML = result;
+                otherEles.forEach(otherEle => {
+                    otherEle.style.backgroundColor = '';
+                });
+            }
         </script>
 
     </head>
