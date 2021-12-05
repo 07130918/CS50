@@ -16,16 +16,6 @@ def get_db():
     return db
 
 
-@app.teardown_appcontext
-def close_connection(exception):
-    """
-        @app.teardown_appcontextでアプリ開始時にDB接続,終了時にDB接続を切る
-    """
-    db = getattr(g, '_database', None)
-    if db is not None:
-        db.close()
-
-
 def dict_factory(cursor, row):
     """
         取得レコードをtuple型からdict型に変換
@@ -34,6 +24,16 @@ def dict_factory(cursor, row):
     for idx, col in enumerate(cursor.description):
         d[col[0]] = row[idx]
     return d
+
+
+@app.teardown_appcontext
+def close_connection(exception):
+    """
+        @app.teardown_appcontextでアプリ開始時にDB接続,終了時にDB接続を切る
+    """
+    db = getattr(g, '_database', None)
+    if db is not None:
+        db.close()
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -46,18 +46,18 @@ def index():
         name = request.form.get("name")
         month = request.form.get("month")
         day = request.form.get("day")
-        print(type(month), month)
+        # ガードを作る必要あり
         curs.execute(
             'INSERT INTO birthdays(name, month, day)'
-            f'values("{name}", "{month}, {day}")'
+            f'values("{name}", "{month}", "{day}")'
         )
         db.commit()
         return redirect("/")
 
+    # HTTP GET
     else:
 
         # TODO: Display the entries in the database on index.html
         curs.execute('SELECT * FROM birthdays')
         persons = curs.fetchall()
-        print(persons)
         return render_template("index.html", persons=persons)
