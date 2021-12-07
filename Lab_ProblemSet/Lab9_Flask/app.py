@@ -1,10 +1,25 @@
 import sqlite3
 
-from flask import (Flask, flash, g, jsonify, redirect, render_template,
-                   request, session)
+from flask import Flask, flash, g, redirect, render_template, request
 
 # Configure application
 app = Flask(__name__)
+
+DAY_UPPER_LIMIT = {
+    # formからはtype=numberでもstr型で来る
+    '1': 31,
+    '2': 28,
+    '3': 31,
+    '4': 30,
+    '5': 31,
+    '6': 30,
+    '7': 31,
+    '8': 31,
+    '9': 30,
+    '10': 31,
+    '11': 30,
+    '12': 31,
+}
 
 
 # https://msiz07-flask-docs-ja.readthedocs.io/ja/latest/patterns/sqlite3.html
@@ -46,7 +61,17 @@ def index():
         name = request.form.get("name")
         month = request.form.get("month")
         day = request.form.get("day")
-        # ガードを作る必要あり
+
+        # Invald values guard
+        if not name:
+            return render_template("index.html", message='Invalid Name')
+
+        if not month or int(month) > 12:
+            return render_template("index.html", message='Invalid Month')
+
+        if not day or int(day) > DAY_UPPER_LIMIT[month]:
+            return render_template("index.html", message='Invalid Day')
+
         curs.execute(
             'INSERT INTO birthdays(name, month, day)'
             f'values("{name}", "{month}", "{day}")'

@@ -42,6 +42,11 @@ h1 {
     font-size: 48px;
 }
 
+a {
+    text-decoration: none;
+    color: #fff;
+}
+
 button, input[type="submit"] {
     background-color: #d9edff;
     border: 1px solid transparent;
@@ -80,4 +85,3 @@ table td {
 tbody tr:nth-of-type(odd) {
     background-color: rgb(179, 208, 255, 0.3)
 }
-
