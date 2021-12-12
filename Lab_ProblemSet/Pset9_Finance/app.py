@@ -165,7 +165,19 @@ def index():
 @login_required
 def quote():
     """Get stock quote."""
-    return apology("TODO")
+    if request.method == "POST":
+        quote = lookup(request.form.get("symbol"))
+        if type(quote) is dict:
+            # jsonをきちんと取得できた時
+            return render_template("quote.html", quote=quote)
+        elif type(quote) is str:
+            return render_template("quote.html", error_message='Invalid Symbol')
+        else:
+            # 何かしらのエラーでlookupからNoneがか返ってきた時
+            return render_template("quote.html", error_message="Any errors have occurred.")
+    # GET
+    else:
+        return render_template("quote.html")
 
 
 @app.route("/buy", methods=["GET", "POST"])

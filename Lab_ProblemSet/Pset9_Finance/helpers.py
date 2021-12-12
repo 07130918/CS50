@@ -43,6 +43,8 @@ def lookup(symbol):
         api_key = os.environ.get("API_KEY")
         url = f"https://cloud.iexapis.com/stable/stock/{urllib.parse.quote_plus(symbol)}/quote?token={api_key}"
         response = requests.get(url)
+        if not response:
+            return 'Invaild Symbol'
         response.raise_for_status()
     except requests.RequestException:
         return None
