@@ -9,6 +9,8 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from helpers import apology, login_required, lookup, usd
 
+# 今完全に実装されているのはlogin とlogoutの2つだけ
+
 # Configure application
 app = Flask(__name__)
 
@@ -68,25 +70,14 @@ def close_connection(exception):
         db.close()
 
 
-@app.route("/")
-@login_required
-def index():
-    """Show portfolio of stocks"""
-    return apology("TODO")
-
-
-@app.route("/buy", methods=["GET", "POST"])
-@login_required
-def buy():
-    """Buy shares of stock"""
-    return apology("TODO")
-
-
-@app.route("/history")
-@login_required
-def history():
-    """Show history of transactions"""
-    return apology("TODO")
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    """Register user"""
+    if request.method == "POST":
+        return redirect("/")
+    # GET
+    else:
+        return render_template("register.html")
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -110,7 +101,8 @@ def login():
             return apology("must provide password", 403)
 
         # Query database for username
-        curs.execute("SELECT * FROM users WHERE username = ?", request.form.get("username"))
+        curs.execute("SELECT * FROM users WHERE username = ?",
+                     request.form.get("username"))
         rows = curs.fetchall()
 
         # Ensure username exists and password is correct
@@ -139,16 +131,31 @@ def logout():
     return redirect("/")
 
 
+@app.route("/")
+@login_required
+def index():
+    """Show portfolio of stocks"""
+    return apology("TODO")
+
+
+@app.route("/buy", methods=["GET", "POST"])
+@login_required
+def buy():
+    """Buy shares of stock"""
+    return apology("TODO")
+
+
+@app.route("/history")
+@login_required
+def history():
+    """Show history of transactions"""
+    return apology("TODO")
+
+
 @app.route("/quote", methods=["GET", "POST"])
 @login_required
 def quote():
     """Get stock quote."""
-    return apology("TODO")
-
-
-@app.route("/register", methods=["GET", "POST"])
-def register():
-    """Register user"""
     return apology("TODO")
 
 
