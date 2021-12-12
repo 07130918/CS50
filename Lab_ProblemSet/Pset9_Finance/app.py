@@ -1,15 +1,12 @@
 import os
 import sqlite3
 
-from flask import Flask, g, flash, redirect, render_template, request, session
+from flask import Flask, g, redirect, render_template, request, session
 from flask_session import Session
 from tempfile import mkdtemp
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
-from werkzeug.security import check_password_hash, generate_password_hash
 
 from helpers import apology, login_required, lookup, usd
-
-# 今完全に実装されているのはlogin とlogoutの2つだけ
 
 # Configure application
 app = Flask(__name__)
@@ -36,7 +33,7 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
-# Make sure API key is set
+# Make sure API key is set(環境変数からAPI_KEYの確認)
 if not os.environ.get("API_KEY"):
     raise RuntimeError("API_KEY not set")
 
@@ -73,7 +70,30 @@ def close_connection(exception):
 @app.route("/register", methods=["GET", "POST"])
 def register():
     """Register user"""
+    user_name = request.form.get("username")
+    password = request.form.get("password")
+    password_again = request.form.get("password-again")
+
     if request.method == "POST":
+        if not user_name:
+            return apology("must provide username", 403)
+        elif not password:
+            return apology("must provide password", 403)
+        elif not password_again:
+            return apology("must provide password(again)", 403)
+        elif password != password_again:
+            return apology("Password and confirmation password are different.", 403)
+
+        db = get_db()
+        curs = db.cursor()
+        try:
+            curs.execute(f'INSERT INTO users(username, hash) values("{user_name}", "{password}")')
+        except Exception as e:
+            print(e)
+            db.rollback()
+        finally:
+            db.commit()
+
         return redirect("/")
     # GET
     else:
@@ -91,31 +111,26 @@ def login():
 
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
-
+        user_name = request.form.get("username")
+        password = request.form.get("password")
         # Ensure username was submitted
-        if not request.form.get("username"):
+        if not user_name:
             return apology("must provide username", 403)
-
-        # Ensure password was submitted
-        elif not request.form.get("password"):
+        elif not password:
             return apology("must provide password", 403)
 
         # Query database for username
-        curs.execute("SELECT * FROM users WHERE username = ?",
-                     request.form.get("username"))
+        curs.execute(f'SELECT * FROM users WHERE username = "{user_name}"')
         rows = curs.fetchall()
 
         # Ensure username exists and password is correct
-        if len(rows) != 1 or not check_password_hash(rows[0]["hash"], request.form.get("password")):
+        if len(rows) != 1 or rows[0]["hash"] != password:
             return apology("invalid username and/or password", 403)
 
         # Remember which user has logged in
         session["user_id"] = rows[0]["id"]
 
-        # Redirect user to home page
         return redirect("/")
-
-    # User reached route via GET (as by clicking a link or via redirect)
     else:
         return render_template("login.html")
 
@@ -123,11 +138,8 @@ def login():
 @app.route("/logout")
 def logout():
     """Log user out"""
-
     # Forget any user_id
     session.clear()
-
-    # Redirect user to login form
     return redirect("/")
 
 
