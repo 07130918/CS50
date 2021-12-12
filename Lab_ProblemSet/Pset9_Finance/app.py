@@ -161,20 +161,6 @@ def index():
     return apology("TODO")
 
 
-@app.route("/buy", methods=["GET", "POST"])
-@login_required
-def buy():
-    """Buy shares of stock"""
-    return apology("TODO")
-
-
-@app.route("/history")
-@login_required
-def history():
-    """Show history of transactions"""
-    return apology("TODO")
-
-
 @app.route("/quote", methods=["GET", "POST"])
 @login_required
 def quote():
@@ -182,10 +168,24 @@ def quote():
     return apology("TODO")
 
 
+@app.route("/buy", methods=["GET", "POST"])
+@login_required
+def buy():
+    """Buy shares of stock"""
+    return apology("TODO")
+
+
 @app.route("/sell", methods=["GET", "POST"])
 @login_required
 def sell():
     """Sell shares of stock"""
+    return apology("TODO")
+
+
+@app.route("/history")
+@login_required
+def history():
+    """Show history of transactions"""
     return apology("TODO")
 
 
