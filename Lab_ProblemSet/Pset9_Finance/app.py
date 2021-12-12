@@ -70,12 +70,19 @@ def close_connection(exception):
 @app.route("/register", methods=["GET", "POST"])
 def register():
     """Register user"""
+    db = get_db()
+    curs = db.cursor()
+
     user_name = request.form.get("username")
     password = request.form.get("password")
     password_again = request.form.get("password-again")
 
     if request.method == "POST":
-        if not user_name:
+        curs.execute(f'SELECT * FROM users WHERE username = "{user_name}"')
+        user = curs.fetchone()
+        if user:
+            return apology("Username already exists", 403)
+        elif not user_name:
             return apology("must provide username", 403)
         elif not password:
             return apology("must provide password", 403)
@@ -84,16 +91,18 @@ def register():
         elif password != password_again:
             return apology("Password and confirmation password are different.", 403)
 
-        db = get_db()
-        curs = db.cursor()
         try:
             curs.execute(f'INSERT INTO users(username, hash) values("{user_name}", "{password}")')
+            curs.execute(f'SELECT * FROM users WHERE username = "{user_name}"')
+            user = curs.fetchone()
         except Exception as e:
             print(e)
             db.rollback()
         finally:
             db.commit()
 
+        # sessionに値を格納し登録後はログイン状態にし、ルートパスにリダイレクト
+        session["user_id"] = user["id"]
         return redirect("/")
     # GET
     else:
@@ -121,14 +130,14 @@ def login():
 
         # Query database for username
         curs.execute(f'SELECT * FROM users WHERE username = "{user_name}"')
-        rows = curs.fetchall()
+        users = curs.fetchall()
 
         # Ensure username exists and password is correct
-        if len(rows) != 1 or rows[0]["hash"] != password:
+        if len(users) != 1 or users[0]["hash"] != password:
             return apology("invalid username and/or password", 403)
 
         # Remember which user has logged in
-        session["user_id"] = rows[0]["id"]
+        session["user_id"] = users[0]["id"]
 
         return redirect("/")
     else:
