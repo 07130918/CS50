@@ -1,6 +1,6 @@
 import sqlite3
 
-from flask import Flask, flash, g, redirect, render_template, request
+from flask import Flask, g, redirect, render_template, request
 
 # Configure application
 app = Flask(__name__)
