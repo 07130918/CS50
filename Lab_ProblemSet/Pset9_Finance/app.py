@@ -5,6 +5,7 @@ from flask import Flask, g, redirect, render_template, request, session
 from flask_session import Session
 from tempfile import mkdtemp
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
+from werkzeug.security import check_password_hash, generate_password_hash
 
 from helpers import apology, login_required, lookup, usd
 
@@ -92,7 +93,9 @@ def register():
             return apology("Password and confirmation password are different.", 403)
 
         try:
-            curs.execute(f'INSERT INTO users(username, hash) values("{user_name}", "{password}")')
+            # passwordを直でdatabaseに保存しない
+            hash = generate_password_hash(password)
+            curs.execute(f'INSERT INTO users(username, hash) values("{user_name}", "{hash}")')
             curs.execute(f'SELECT * FROM users WHERE username = "{user_name}"')
             user = curs.fetchone()
         except Exception as e:
@@ -133,12 +136,11 @@ def login():
         users = curs.fetchall()
 
         # Ensure username exists and password is correct
-        if len(users) != 1 or users[0]["hash"] != password:
+        if len(users) != 1 or not check_password_hash(users[0]["hash"], password):
             return apology("invalid username and/or password", 403)
 
         # Remember which user has logged in
         session["user_id"] = users[0]["id"]
-
         return redirect("/")
     else:
         return render_template("login.html")
