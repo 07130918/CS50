@@ -18,6 +18,7 @@
             }
 
             function eventForking(buttons) {
+                // forEachはコールバック関数を引数に取る
                 buttons.forEach(button => {
                     button.addEventListener('click', function() {
                         if (this.id === 'copyButton') {
