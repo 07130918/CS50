@@ -165,11 +165,15 @@ def index():
 def quote():
     """Get stock quote."""
     if request.method == "POST":
-        quote = lookup(request.form.get("symbol"))
+        symbol = request.form.get("symbol")
+        if not symbol:
+            return render_template("quote.html", error_message='Please enter symbol')
+
+        quote = lookup(symbol)
         if type(quote) is dict:
             # jsonをきちんと取得できた時
             return render_template("quote.html", quote=quote)
-        elif type(quote) is str:
+        elif quote == 'Invaild Symbol':
             return render_template("quote.html", error_message='Invalid Symbol')
         else:
             # 何かしらのエラーでlookupからNoneがか返ってきた時
@@ -185,11 +189,14 @@ def buy():
     """Buy shares of stock"""
     if request.method == "POST":
         shares = request.form.get("shares")
-        if type(shares) is float:
-            return render_template("buy.html", error_message="shares must be integer")
+        symbol = request.form.get("symbol")
+        if not symbol:
+            return render_template("buy.html", error_message='Please enter symbol')
+        elif not shares:
+            return render_template("buy.html", error_message='Please enter shares')
 
-        quote = lookup(request.form.get("symbol"))
-        # ここからのガードが効いてないかも?
+        quote = lookup(symbol)
+        print(quote)
         if type(quote) is dict:
             # jsonをきちんと取得できた時
             db = get_db()
@@ -201,10 +208,11 @@ def buy():
             # user["cash"]をみて足りる場合:
             #     user["cash"] -= 入力値 * 株価
             #     購入レコードを新たなデータベースに保存
+            #     誰がいつ、どの価格で何を買ったかがわかるように
             # 足りないとき:
             #     弾き返す
             return render_template("buy.html")
-        elif type(quote) is str:
+        elif quote == 'Invaild Symbol':
             return render_template("buy.html", error_message='Invalid Symbol')
         else:
             # 何かしらのエラーでlookupからNoneがか返ってきた時
