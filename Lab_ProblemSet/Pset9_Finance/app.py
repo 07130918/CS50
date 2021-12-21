@@ -74,11 +74,11 @@ def register():
     db = get_db()
     curs = db.cursor()
 
-    user_name = request.form.get("username")
-    password = request.form.get("password")
-    password_again = request.form.get("password-again")
-
     if request.method == "POST":
+        user_name = request.form.get("username")
+        password = request.form.get("password")
+        password_again = request.form.get("password-again")
+
         curs.execute(f'SELECT * FROM users WHERE username = "{user_name}"')
         user = curs.fetchone()
         if user:
@@ -184,7 +184,13 @@ def quote():
 @login_required
 def buy():
     """Buy shares of stock"""
-    return apology("TODO")
+    if request.method == "POST":
+        return render_template("buy.html")
+    # GET
+    else:
+        return render_template("buy.html")
+
+
 
 
 @app.route("/sell", methods=["GET", "POST"])
