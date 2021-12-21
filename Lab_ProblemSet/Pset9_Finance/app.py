@@ -1,9 +1,12 @@
 import os
+import datetime
 import sqlite3
 
 from flask import Flask, g, redirect, render_template, request, session
 from flask_session import Session
 from tempfile import mkdtemp
+from matplotlib import use
+from sympy import quo
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -203,14 +206,25 @@ def buy():
             curs = db.cursor()
             curs.execute(f'SELECT * FROM users WHERE id = "{session["user_id"]}"')
             user = curs.fetchone()
+            user["cash"] = float(user["cash"])
 
-            # 入力値 * 株価をし必要な金額を算出
-            # user["cash"]をみて足りる場合:
-            #     user["cash"] -= 入力値 * 株価
-            #     購入レコードを新たなデータベースに保存
-            #     誰がいつ、どの価格で何を買ったかがわかるように
-            # 足りないとき:
-            #     弾き返す
+            if user["cash"] < shares * quote["price"]:
+                return render_template("buy.html", error_message="You don't have enough cash")
+
+            user["cash"] -= shares * quote["price"]
+            try:
+                dt_now = datetime.datetime.now()
+                record = (session["user_id"], "buy",
+                          quote["name"], quote["symbol"], quote["price"], dt_now)
+                curs.execute('INSERT INTO transaction_records(user_id, action, company_name, symbol, price, transaction_datetime) values(?,?,?,?,?,?)', record)
+                curs.execute(f'UPDATE users SET cash = ? WHERE id = "{session["user_id"]}"', (user["cash"]))
+            except Exception as e:
+                print(e)
+                user["cash"] += shares * quote["price"]
+                db.rollback()
+            finally:
+                db.commit()
+
             return render_template("buy.html")
         elif quote == 'Invaild Symbol':
             return render_template("buy.html", error_message='Invalid Symbol')
