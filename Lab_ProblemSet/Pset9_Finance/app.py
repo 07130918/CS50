@@ -71,10 +71,10 @@ def close_connection(exception):
 @app.route("/register", methods=["GET", "POST"])
 def register():
     """Register user"""
-    db = get_db()
-    curs = db.cursor()
-
     if request.method == "POST":
+        db = get_db()
+        curs = db.cursor()
+
         user_name = request.form.get("username")
         password = request.form.get("password")
         password_again = request.form.get("password-again")
@@ -115,9 +115,6 @@ def register():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     """Log user in"""
-    db = get_db()
-    curs = db.cursor()
-
     # Forget any user_id
     session.clear()
 
@@ -132,6 +129,8 @@ def login():
             return apology("must provide password", 403)
 
         # Query database for username
+        db = get_db()
+        curs = db.cursor()
         curs.execute(f'SELECT * FROM users WHERE username = "{user_name}"')
         users = curs.fetchall()
 
@@ -185,12 +184,34 @@ def quote():
 def buy():
     """Buy shares of stock"""
     if request.method == "POST":
-        return render_template("buy.html")
+        shares = request.form.get("shares")
+        if type(shares) is float:
+            return render_template("buy.html", error_message="shares must be integer")
+
+        quote = lookup(request.form.get("symbol"))
+        # ここからのガードが効いてないかも?
+        if type(quote) is dict:
+            # jsonをきちんと取得できた時
+            db = get_db()
+            curs = db.cursor()
+            curs.execute(f'SELECT * FROM users WHERE id = "{session["user_id"]}"')
+            user = curs.fetchone()
+
+            # 入力値 * 株価をし必要な金額を算出
+            # user["cash"]をみて足りる場合:
+            #     user["cash"] -= 入力値 * 株価
+            #     購入レコードを新たなデータベースに保存
+            # 足りないとき:
+            #     弾き返す
+            return render_template("buy.html")
+        elif type(quote) is str:
+            return render_template("buy.html", error_message='Invalid Symbol')
+        else:
+            # 何かしらのエラーでlookupからNoneがか返ってきた時
+            return render_template("buy.html", error_message="Any errors have occurred.")
     # GET
     else:
         return render_template("buy.html")
-
-
 
 
 @app.route("/sell", methods=["GET", "POST"])
