@@ -60,6 +60,7 @@ def register():
         password = request.form.get("password")
         password_again = request.form.get("password-again")
 
+        # ガード
         if find_user_by(user_name, curs):
             return apology("Username already exists", 403)
         elif not user_name:
@@ -115,16 +116,16 @@ def login():
         # Query database for username
         db = get_db()
         curs = db.cursor()
-        curs.execute(f'SELECT * FROM users WHERE username="{user_name}"')
-        users = curs.fetchall()
-
+        user = find_user_by(user_name, curs)
+        print(user)
         # Ensure username exists and password is correct
-        if len(users) != 1 or not check_password_hash(users[0]["hash"], password):
+        if user is None or not check_password_hash(user["hash"], password):
             return apology("invalid username and/or password", 403)
 
         # Remember which user has logged in
-        session["user_id"] = users[0]["id"]
+        session["user_id"] = user["id"]
         return redirect("/")
+    # HTTP GET
     else:
         return render_template("login.html")
 
