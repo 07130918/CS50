@@ -86,7 +86,7 @@ def register():
             db.commit()
 
         return redirect("/")
-    # GET
+    # HTTP GET
     else:
         return render_template("register.html")
 
