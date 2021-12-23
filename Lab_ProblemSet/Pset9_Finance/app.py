@@ -92,11 +92,6 @@ def register():
         return render_template("register.html")
 
 
-def find_user_by(user_name, curs):
-    curs.execute(f'SELECT * FROM users WHERE username="{user_name}"')
-    return curs.fetchone()
-
-
 @app.route("/login", methods=["GET", "POST"])
 def login():
     """Log user in"""
@@ -117,7 +112,7 @@ def login():
         db = get_db()
         curs = db.cursor()
         user = find_user_by(user_name, curs)
-        print(user)
+
         # Ensure username exists and password is correct
         if user is None or not check_password_hash(user["hash"], password):
             return apology("invalid username and/or password", 403)
@@ -283,6 +278,12 @@ def sell():
 def history():
     """Show history of transactions"""
     return apology("TODO")
+
+
+# サポート関数群
+def find_user_by(user_name, curs):
+    curs.execute(f'SELECT * FROM users WHERE username="{user_name}"')
+    return curs.fetchone()
 
 
 def errorhandler(e):
