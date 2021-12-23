@@ -41,4 +41,7 @@
             {% endif %}
         </tfoot>
     </table>
+    {% if message %}
+        <h2 class="message">{{ message }}</h2>
+    {% endif %}
 {% endblock %}

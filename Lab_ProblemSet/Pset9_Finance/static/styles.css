@@ -47,15 +47,19 @@ main img
 }
 
 /* 自分で追記分 */
+tbody {
+    border-top: 3px solid #000000;
+    border-bottom: 3px solid #000000;
+}
+
 .text-end {
     text-align: right !important;
 }
 
-.results {
-    font-weight: bold;
+.message {
+    margin-top: 10vh;
 }
 
-tbody {
-    border-top: 3px solid #000000;
-    border-bottom: 3px solid #000000;
+.results {
+    font-weight: bold;
 }
