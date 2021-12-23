@@ -80,7 +80,7 @@ def register():
         password = request.form.get("password")
         password_again = request.form.get("password-again")
 
-        curs.execute(f'SELECT * FROM users WHERE username = "{user_name}"')
+        curs.execute(f'SELECT * FROM users WHERE username="{user_name}"')
         user = curs.fetchone()
         if user:
             return apology("Username already exists", 403)
@@ -96,9 +96,8 @@ def register():
         try:
             # passwordを直でdatabaseに保存しない
             hash = generate_password_hash(password)
-            curs.execute(
-                f'INSERT INTO users(username, hash) values("{user_name}", "{hash}")')
-            curs.execute(f'SELECT * FROM users WHERE username = "{user_name}"')
+            curs.execute("INSERT INTO users(username, hash) values(?, ?)", (user_name, hash))
+            curs.execute(f'SELECT * FROM users WHERE username="{user_name}"')
             user = curs.fetchone()
         except Exception as e:
             print(e)
@@ -133,7 +132,7 @@ def login():
         # Query database for username
         db = get_db()
         curs = db.cursor()
-        curs.execute(f'SELECT * FROM users WHERE username = "{user_name}"')
+        curs.execute(f'SELECT * FROM users WHERE username="{user_name}"')
         users = curs.fetchall()
 
         # Ensure username exists and password is correct
