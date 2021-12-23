@@ -220,7 +220,7 @@ def buy():
                     quote["name"], quote["symbol"], datetime.datetime.now()
                 )
                 curs.execute(
-                    'INSERT INTO transaction_records(user_id, action, share, price,'
+                    'INSERT INTO transaction_records(user_id, action, shares, price,'
                     'company_name, symbol, transaction_datetime) values(?,?,?,?,?,?,?)',
                     record
                 )
