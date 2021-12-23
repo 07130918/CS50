@@ -5,8 +5,8 @@
 {% endblock %}
 
 {% block main %}
-    {% if error_message %}
-        <p>{{ error_message }}</p>
+    {% if message %}
+        <p>{{ message }}</p>
     {% endif %}
     <form action="/buy" method="post">
         <div class="form-group">
