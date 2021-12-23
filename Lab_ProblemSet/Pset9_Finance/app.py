@@ -60,8 +60,7 @@ def register():
         password = request.form.get("password")
         password_again = request.form.get("password-again")
 
-        user = find_user_by(user_name, curs)
-        if user:
+        if find_user_by(user_name, curs):
             return apology("Username already exists", 403)
         elif not user_name:
             return apology("must provide username", 403)
@@ -78,15 +77,14 @@ def register():
             curs.execute(
                 'INSERT INTO users(username, hash) values(?, ?)', (user_name, hash)
             )
-            user = find_user_by(user_name, curs)
+            # sessionに値を格納し登録後はログイン状態にし、ルートパスにリダイレクト
+            session["user_id"] = find_user_by(user_name, curs)["id"]
         except Exception as e:
             print(e)
             db.rollback()
         finally:
             db.commit()
 
-        # sessionに値を格納し登録後はログイン状態にし、ルートパスにリダイレクト
-        session["user_id"] = user["id"]
         return redirect("/")
     # GET
     else:
