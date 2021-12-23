@@ -5,8 +5,6 @@ import sqlite3
 from flask import Flask, g, redirect, render_template, request, session
 from flask_session import Session
 from tempfile import mkdtemp
-from matplotlib import use
-from sympy import quo
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -98,7 +96,8 @@ def register():
         try:
             # passwordを直でdatabaseに保存しない
             hash = generate_password_hash(password)
-            curs.execute(f'INSERT INTO users(username, hash) values("{user_name}", "{hash}")')
+            curs.execute(
+                f'INSERT INTO users(username, hash) values("{user_name}", "{hash}")')
             curs.execute(f'SELECT * FROM users WHERE username = "{user_name}"')
             user = curs.fetchone()
         except Exception as e:
@@ -190,50 +189,50 @@ def quote():
 @login_required
 def buy():
     """Buy shares of stock"""
-    if request.method == "POST":
-        shares = request.form.get("shares")
-        symbol = request.form.get("symbol")
-        if not symbol:
-            return render_template("buy.html", error_message='Please enter symbol')
-        elif not shares:
-            return render_template("buy.html", error_message='Please enter shares')
+    # if request.method == "POST":
+    #     shares = request.form.get("shares")
+    #     symbol = request.form.get("symbol")
+    #     if not symbol:
+    #         return render_template("buy.html", error_message='Please enter symbol')
+    #     elif not shares:
+    #         return render_template("buy.html", error_message='Please enter shares')
 
-        quote = lookup(symbol)
-        print(quote)
-        if type(quote) is dict:
-            # jsonをきちんと取得できた時
-            db = get_db()
-            curs = db.cursor()
-            curs.execute(f'SELECT * FROM users WHERE id = "{session["user_id"]}"')
-            user = curs.fetchone()
-            user["cash"] = float(user["cash"])
+    #     quote = lookup(symbol)
+    #     print(quote)
+    #     if type(quote) is dict:
+    #         # jsonをきちんと取得できた時
+    #         db = get_db()
+    #         curs = db.cursor()
+    #         curs.execute(f'SELECT * FROM users WHERE id = "{session["user_id"]}"')
+    #         user = curs.fetchone()
+    #         user["cash"] = float(user["cash"])
 
-            if user["cash"] < shares * quote["price"]:
-                return render_template("buy.html", error_message="You don't have enough cash")
+    #         if user["cash"] < shares * quote["price"]:
+    #             return render_template("buy.html", error_message="You don't have enough cash")
 
-            user["cash"] -= shares * quote["price"]
-            try:
-                dt_now = datetime.datetime.now()
-                record = (session["user_id"], "buy",
-                          quote["name"], quote["symbol"], quote["price"], dt_now)
-                curs.execute('INSERT INTO transaction_records(user_id, action, company_name, symbol, price, transaction_datetime) values(?,?,?,?,?,?)', record)
-                curs.execute(f'UPDATE users SET cash = ? WHERE id = "{session["user_id"]}"', (user["cash"]))
-            except Exception as e:
-                print(e)
-                user["cash"] += shares * quote["price"]
-                db.rollback()
-            finally:
-                db.commit()
+    #         user["cash"] -= shares * quote["price"]
+    #         try:
+    #             dt_now = datetime.datetime.now()
+    #             record = (session["user_id"], "buy", quote["name"], quote["symbol"], quote["price"], dt_now)
 
-            return render_template("buy.html")
-        elif quote == 'Invaild Symbol':
-            return render_template("buy.html", error_message='Invalid Symbol')
-        else:
-            # 何かしらのエラーでlookupからNoneがか返ってきた時
-            return render_template("buy.html", error_message="Any errors have occurred.")
-    # GET
-    else:
-        return render_template("buy.html")
+    #             curs.execute('INSERT INTO transaction_records(user_id, action, company_name, symbol, price, transaction_datetime) values(?,?,?,?,?,?)', record)
+    #             curs.execute(f'UPDATE users SET cash = ? WHERE id = "{session["user_id"]}"', (user["cash"]))
+    #         except Exception as e:
+    #             print(e)
+    #             user["cash"] += shares * quote["price"]
+    #             db.rollback()
+    #         finally:
+    #             db.commit()
+
+    #         return render_template("buy.html")
+    #     elif quote == 'Invaild Symbol':
+    #         return render_template("buy.html", error_message='Invalid Symbol')
+    #     else:
+    #         # 何かしらのエラーでlookupからNoneがか返ってきた時
+    #         return render_template("buy.html", error_message="Any errors have occurred.")
+    # # GET
+    # else:
+    #     return render_template("buy.html")
 
 
 @app.route("/sell", methods=["GET", "POST"])
