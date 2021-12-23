@@ -160,7 +160,25 @@ def logout():
 @login_required
 def index():
     """Show portfolio of stocks"""
-    return apology("TODO")
+    db = get_db()
+    curs = db.cursor()
+    curs.execute(
+        'SELECT symbol, company_name as name, SUM(shares) as shares'
+        f' FROM transaction_records WHERE user_id="{session["user_id"]}"'
+        'GROUP BY symbol'
+    )
+    records = curs.fetchall()
+    if not records:
+        return render_template("index.html")
+
+    # ここからhtmlに受け渡しのためのデータ加工
+    for record in records:
+        quote = lookup(record["symbol"])
+        price = quote["price"]
+        print(quote)
+        print(price)
+    # cash = curs.execute(f'SELECT cash FROM users WHERE id="{session["user_id"]}"')
+    return render_template("index.html")
 
 
 @app.route("/quote", methods=["GET", "POST"])
@@ -176,7 +194,7 @@ def quote():
         if type(quote) is dict:
             # jsonをきちんと取得できた時
             return render_template("quote.html", quote=quote)
-        elif quote == 'Invaild Symbol':
+        if quote == 'Invaild Symbol':
             return render_template("quote.html", error_message='Invalid Symbol')
         else:
             # 何かしらのエラーでlookupからNoneがか返ってきた時
