@@ -199,7 +199,6 @@ def buy():
         elif not shares:
             return apology('Please enter shares')
 
-
         if type(quote) is dict:
             # jsonをきちんと取得できた時
             db = get_db()
@@ -226,8 +225,6 @@ def buy():
                 db.commit()
 
             return render_template("buy.html")
-        elif quote == 'Invaild Symbol':
-            return render_template("buy.html", error_message='Invalid Symbol')
         else:
             # 何かしらのエラーでlookupからNoneがか返ってきた時
             return render_template("buy.html", error_message="Any errors have occurred.")
