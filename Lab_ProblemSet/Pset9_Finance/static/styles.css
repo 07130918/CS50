@@ -46,6 +46,16 @@ main img
     max-width: 100%;
 }
 
+/* 自分で追記分 */
 .text-end {
     text-align: right !important;
+}
+
+.results {
+    font-weight: bold;
+}
+
+tbody {
+    border-top: 3px solid #000000;
+    border-bottom: 3px solid #000000;
 }

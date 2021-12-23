@@ -176,13 +176,14 @@ def index():
     cash = curs.fetchone()["cash"]
     total = 0
     for stock in stocks:
-        stock["currnet_price"] = lookup(stock["symbol"])["price"]
-        stock["total"] = stock["shares"] * stock["currnet_price"]
+        stock["current_price"] = lookup(stock["symbol"])["price"]
+        stock["total"] = stock["shares"] * stock["current_price"]
         # 整数で表示したいため
         stock["shares"] = int(stock["shares"])
         total += stock["total"]
     total += cash
 
+    print(stocks)
     return render_template("index.html", stocks=stocks, cash=cash, total=total)
 
 
