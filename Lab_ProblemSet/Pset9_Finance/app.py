@@ -60,8 +60,7 @@ def register():
         password = request.form.get("password")
         password_again = request.form.get("password-again")
 
-        curs.execute(f'SELECT * FROM users WHERE username="{user_name}"')
-        user = curs.fetchone()
+        user = find_user_by(user_name, curs)
         if user:
             return apology("Username already exists", 403)
         elif not user_name:
@@ -79,8 +78,7 @@ def register():
             curs.execute(
                 'INSERT INTO users(username, hash) values(?, ?)', (user_name, hash)
             )
-            curs.execute(f'SELECT * FROM users WHERE username="{user_name}"')
-            user = curs.fetchone()
+            user = find_user_by(user_name, curs)
         except Exception as e:
             print(e)
             db.rollback()
@@ -93,6 +91,11 @@ def register():
     # GET
     else:
         return render_template("register.html")
+
+
+def find_user_by(user_name, curs):
+    curs.execute(f'SELECT * FROM users WHERE username="{user_name}"')
+    return curs.fetchone()
 
 
 @app.route("/login", methods=["GET", "POST"])
