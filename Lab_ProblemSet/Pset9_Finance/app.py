@@ -5,6 +5,7 @@ import sqlite3
 from flask import Flask, g, redirect, render_template, request, session
 from flask_session import Session
 from tempfile import mkdtemp
+from sympy import quo
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -187,18 +188,18 @@ def quote():
     """Get stock quote."""
     if request.method == "POST":
         symbol = request.form.get("symbol")
+        # ガード
         if not symbol:
             return render_template("quote.html", error_message='Please enter symbol')
 
         quote = lookup(symbol)
-        if type(quote) is dict:
-            # jsonをきちんと取得できた時
-            return render_template("quote.html", quote=quote)
         if quote == 'Invaild Symbol':
             return render_template("quote.html", error_message='Invalid Symbol')
-        else:
+        elif quote is None:
             # 何かしらのエラーでlookupからNoneがか返ってきた時
             return render_template("quote.html", error_message="Any errors have occurred.")
+
+        return render_template("quote.html", quote=quote)
     # GET
     else:
         return render_template("quote.html")
