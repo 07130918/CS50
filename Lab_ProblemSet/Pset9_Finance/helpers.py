@@ -1,9 +1,30 @@
 import os
 import requests
+import sqlite3
 import urllib.parse
 
-from flask import redirect, render_template, request, session
+from flask import g
+from flask import redirect, render_template, session
 from functools import wraps
+
+
+# https://msiz07-flask-docs-ja.readthedocs.io/ja/latest/patterns/sqlite3.html
+def get_db():
+    db = getattr(g, '_database', None)
+    if db is None:
+        db = g._database = sqlite3.connect('finance.db')
+        db.row_factory = dict_factory
+    return db
+
+
+def dict_factory(cursor, row):
+    """
+        取得レコードをtuple型からdict型に変換
+    """
+    d = {}
+    for idx, col in enumerate(cursor.description):
+        d[col[0]] = row[idx]
+    return d
 
 
 def apology(message, code=400):

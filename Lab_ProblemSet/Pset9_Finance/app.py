@@ -1,6 +1,5 @@
 import os
 import datetime
-import sqlite3
 
 from flask import Flask, g, redirect, render_template, request, session
 from flask_session import Session
@@ -8,7 +7,7 @@ from tempfile import mkdtemp
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from helpers import apology, login_required, lookup, usd
+from helpers import get_db, apology, login_required, lookup, usd
 
 # Configure application
 app = Flask(__name__)
@@ -38,25 +37,6 @@ Session(app)
 # Make sure API key is set(環境変数からAPI_KEYの確認)
 if not os.environ.get("API_KEY"):
     raise RuntimeError("API_KEY not set")
-
-
-# https://msiz07-flask-docs-ja.readthedocs.io/ja/latest/patterns/sqlite3.html
-def get_db():
-    db = getattr(g, '_database', None)
-    if db is None:
-        db = g._database = sqlite3.connect('finance.db')
-        db.row_factory = dict_factory
-    return db
-
-
-def dict_factory(cursor, row):
-    """
-        取得レコードをtuple型からdict型に変換
-    """
-    d = {}
-    for idx, col in enumerate(cursor.description):
-        d[col[0]] = row[idx]
-    return d
 
 
 @app.teardown_appcontext
@@ -169,22 +149,43 @@ def index():
     )
     stocks = curs.fetchall()
     if not stocks:
-        return render_template("index.html")
+        return render_template("index.html", message="You don't have any stocks yet")
 
-    # ここからhtmlに受け渡しのためのデータ加工
+    # ここからhtmlに受け渡しのためのデータ加工する関数の呼び出し
+    stocks, cash, total = call_portfolio(stocks)
+
+    return render_template("index.html", stocks=stocks, cash=cash, total=total)
+
+
+def call_portfolio(stocks):
+    db = get_db()
+    curs = db.cursor()
+    cash = call_cash(curs)
+    stocks, total = apend_attribute_to(stocks)
+
+    total += cash
+    return stocks, cash, total
+
+
+def call_cash(curs):
     curs.execute(f'SELECT cash FROM users WHERE id="{session["user_id"]}"')
-    cash = curs.fetchone()["cash"]
+    return curs.fetchone()["cash"]
+
+
+def apend_attribute_to(stocks):
     total = 0
     for stock in stocks:
         stock["current_price"] = lookup(stock["symbol"])["price"]
         stock["total"] = stock["shares"] * stock["current_price"]
         # 整数で表示したいため
         stock["shares"] = int(stock["shares"])
-        total += stock["total"]
-    total += cash
+        total = total_calculate(total, stock)
+    return stocks, total
 
-    print(stocks)
-    return render_template("index.html", stocks=stocks, cash=cash, total=total)
+
+def total_calculate(total, stock):
+    total += stock["total"]
+    return total
 
 
 @app.route("/quote", methods=["GET", "POST"])
