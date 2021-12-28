@@ -149,40 +149,10 @@ def index():
         return render_template("index.html", message="You don't have any stocks yet")
 
     # ここからhtmlに受け渡しのためのデータ加工する関数の呼び出し
-    stocks, cash, total = call_portfolio(stocks)
-
-    return render_template("index.html", stocks=stocks, cash=cash, total=total)
-
-
-def call_portfolio(stocks):
-    db = get_db()
-    curs = db.cursor()
-    cash = call_cash(curs)
-    stocks, total = apend_attribute_to(stocks)
-
-    total += cash
-    return stocks, cash, total
-
-
-def call_cash(curs):
-    curs.execute(f'SELECT cash FROM users WHERE id="{session["user_id"]}"')
-    return curs.fetchone()["cash"]
-
-
-def apend_attribute_to(stocks):
-    total = 0
-    for stock in stocks:
-        stock["current_price"] = lookup(stock["symbol"])["price"]
-        stock["total"] = stock["shares"] * stock["current_price"]
-        # 整数で表示したいため
-        stock["shares"] = int(stock["shares"])
-        total = total_calculate(total, stock)
-    return stocks, total
-
-
-def total_calculate(total, stock):
-    total += stock["total"]
-    return total
+    processed_stocks, cash, cash_total = call_portfolio(stocks)
+    return render_template(
+        "index.html", stocks=processed_stocks, cash=cash, total=cash_total
+    )
 
 
 @app.route("/quote", methods=["GET", "POST"])
@@ -284,6 +254,37 @@ def history():
 def find_user_by(user_name, curs):
     curs.execute(f'SELECT * FROM users WHERE username="{user_name}"')
     return curs.fetchone()
+
+
+def call_portfolio(stocks):
+    db = get_db()
+    curs = db.cursor()
+    cash = call_cash(curs)
+    stocks = apend_attribute_to(stocks)
+    cash_total = calculate_cash_total(stocks)
+    cash_total += cash
+    return stocks, cash, cash_total
+
+
+def call_cash(curs):
+    curs.execute(f'SELECT cash FROM users WHERE id="{session["user_id"]}"')
+    return curs.fetchone()["cash"]
+
+
+def apend_attribute_to(stocks):
+    for stock in stocks:
+        stock["current_price"] = lookup(stock["symbol"])["price"]
+        stock["total"] = stock["shares"] * stock["current_price"]
+        # 整数で表示したいため
+        stock["shares"] = int(stock["shares"])
+    return stocks
+
+
+def calculate_cash_total(stocks):
+    cash_total = 0
+    for stock in stocks:
+        cash_total += stock["total"]
+    return cash_total
 
 
 def errorhandler(e):
