@@ -143,9 +143,9 @@ def index():
         return render_template("index.html", message="You don't have any stocks yet")
 
     # ここからhtmlに受け渡しのためのデータ加工する関数の呼び出し
-    processed_stocks, cash, cash_total = call_portfolio(stocks)
+    processed_stocks, cash, all_assets = call_portfolio(stocks)
     return render_template(
-        "index.html", stocks=processed_stocks, cash=cash, total=cash_total
+        "index.html", stocks=processed_stocks, cash=cash, all_assets=all_assets
     )
 
 
@@ -218,9 +218,9 @@ def call_portfolio(stocks):
     curs = db.cursor()
     cash = call_cash(curs)
     stocks = apend_attribute_to(stocks)
-    cash_total = calculate_cash_total(stocks)
-    cash_total += cash
-    return stocks, cash, cash_total
+    all_assets = calculate_all_assets(stocks)
+    all_assets += cash
+    return stocks, cash, all_assets
 
 
 def call_cash(curs):
@@ -235,11 +235,11 @@ def apend_attribute_to(stocks):
     return stocks
 
 
-def calculate_cash_total(stocks):
-    cash_total = 0
+def calculate_all_assets(stocks):
+    all_assets = 0
     for stock in stocks:
-        cash_total += stock["total"]
-    return cash_total
+        all_assets += stock["total"]
+    return all_assets
 
 
 # リファクタリングまだ

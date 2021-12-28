@@ -29,14 +29,14 @@
             {% endif %}
         </tbody>
         <tfoot>
-            {% if cash and total %}
+            {% if cash and all_assets %}
                 <tr>
                     <td class="border-0 results text-end" colspan="4">Cash</td>
                     <td class="border-0 text-end">{{ cash | usd }}</td>
                 </tr>
                 <tr>
                     <td class="border-0 results text-end" colspan="4">TOTAL</td>
-                    <td class="border-0 w-bold text-end">{{ total | usd }}</td>
+                    <td class="border-0 w-bold text-end">{{ all_assets | usd }}</td>
                 </tr>
             {% endif %}
         </tfoot>
