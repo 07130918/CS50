@@ -240,7 +240,23 @@ def buy():
 @login_required
 def sell():
     """Sell shares of stock"""
-    return apology("TODO")
+    if request.method == "POST":
+        return
+    # GET
+    else:
+        db = get_db()
+        curs = db.cursor()
+        curs.execute(
+            'SELECT symbol, company_name as name'
+            f' FROM transaction_records WHERE user_id="{session["user_id"]}"'
+            'GROUP BY symbol'
+        )
+        companys = curs.fetchall()
+        print(companys)
+        if not companys:
+            return render_template("index.html", message="You don't have any stocks yet")
+
+        return render_template("sell.html", companys=companys)
 
 
 @app.route("/history")
