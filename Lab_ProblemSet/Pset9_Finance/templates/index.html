@@ -21,7 +21,7 @@
                     <tr>
                         <td class="text-start">{{ stock["symbol"] }}</td>
                         <td class="text-start">{{ stock["name"] }}</td>
-                        <td class="text-end">{{ stock["shares"] }}</td>
+                        <td class="text-end">{{ stock["shares"] | int }}</td>
                         <td class="text-end">{{ stock["current_price"] | usd }}</td>
                         <td class="text-end">{{ stock["total"] | usd }}</td>
                     </tr>

@@ -338,8 +338,6 @@ def apend_attribute_to(stocks):
     for stock in stocks:
         stock["current_price"] = lookup(stock["symbol"])["price"]
         stock["total"] = stock["shares"] * stock["current_price"]
-        # 整数で表示したいため
-        stock["shares"] = int(stock["shares"])
     return stocks
 
 
