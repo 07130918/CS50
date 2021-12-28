@@ -9,12 +9,17 @@
         <p>{{ message }}</p>
     {% endif %}
     <form action="/sell" method="post">
-        <select name="company">
+        <select name="symbol" class="custom-select">
             <option disabled selected value="">--Please choose a company--</option>
-            {% for company in companys %}
-            <option value="{{ company['symbol'] }}">{{ company['symbol'] }}: {{ company['name'] }}</option>
+            {% for stock in stocks %}
+            <option value="{{ stock['symbol'] }}">
+                {{ stock['symbol'] }}: {{ stock['name'] }} / Shares Max: {{ stock['shares'] | int }}
+            </option>
             {% endfor %}
         </select>
+        <div class="form-group sell-shares">
+            <input class="form-control" name="shares" placeholder="Shares" type="number" min="1">
+        </div>
         <button class="btn btn-primary" type="submit">Sell</button>
     </form>
 {% endblock %}

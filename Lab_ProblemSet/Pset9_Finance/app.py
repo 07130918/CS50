@@ -1,13 +1,15 @@
-import os
 import datetime
+import os
+from tempfile import mkdtemp
 
 from flask import Flask, g, redirect, render_template, request, session
 from flask_session import Session
-from tempfile import mkdtemp
-from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
+from sympy import symbols
+from werkzeug.exceptions import (HTTPException, InternalServerError,
+                                 default_exceptions)
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from helpers import get_db, apology, login_required, lookup, usd
+from helpers import apology, get_db, login_required, lookup, usd
 
 # Configure application
 app = Flask(__name__)
@@ -241,22 +243,26 @@ def buy():
 def sell():
     """Sell shares of stock"""
     if request.method == "POST":
-        return
+        symbol = request.form.get("symbol")
+        shares = request.form.get("shares")
+        print(symbol, shares)
+        # バリデーションが必要
+        # データベース接続し売る処理
+        return redirect("/")
     # GET
     else:
         db = get_db()
         curs = db.cursor()
         curs.execute(
-            'SELECT symbol, company_name as name'
+            'SELECT symbol, company_name as name, SUM(shares) as shares'
             f' FROM transaction_records WHERE user_id="{session["user_id"]}"'
             'GROUP BY symbol'
         )
-        companys = curs.fetchall()
-        print(companys)
-        if not companys:
+        stocks = curs.fetchall()
+        if not stocks:
             return render_template("index.html", message="You don't have any stocks yet")
 
-        return render_template("sell.html", companys=companys)
+        return render_template("sell.html", stocks=stocks)
 
 
 @app.route("/history")
