@@ -139,14 +139,7 @@ def logout():
 @login_required
 def index():
     """Show portfolio of stocks"""
-    db = get_db()
-    curs = db.cursor()
-    curs.execute(
-        'SELECT symbol, company_name as name, SUM(shares) as shares'
-        f' FROM transaction_records WHERE user_id="{session["user_id"]}"'
-        'GROUP BY symbol'
-    )
-    stocks = curs.fetchall()
+    stocks = call_stocks()
     if not stocks:
         return render_template("index.html", message="You don't have any stocks yet")
 
@@ -251,14 +244,7 @@ def sell():
         return redirect("/")
     # GET
     else:
-        db = get_db()
-        curs = db.cursor()
-        curs.execute(
-            'SELECT symbol, company_name as name, SUM(shares) as shares'
-            f' FROM transaction_records WHERE user_id="{session["user_id"]}"'
-            'GROUP BY symbol'
-        )
-        stocks = curs.fetchall()
+        stocks = call_stocks()
         if not stocks:
             return render_template("index.html", message="You don't have any stocks yet")
 
@@ -276,6 +262,17 @@ def history():
 def find_user_by(user_name, curs):
     curs.execute(f'SELECT * FROM users WHERE username="{user_name}"')
     return curs.fetchone()
+
+
+def call_stocks():
+    db = get_db()
+    curs = db.cursor()
+    curs.execute(
+        'SELECT symbol, company_name as name, SUM(shares) as shares'
+        f' FROM transaction_records WHERE user_id="{session["user_id"]}"'
+        'GROUP BY symbol'
+    )
+    return curs.fetchall()
 
 
 def call_portfolio(stocks):
