@@ -164,7 +164,9 @@ def quote():
             return render_template("quote.html", error_message='Invalid Symbol')
         elif quote is None:
             # 何かしらのエラーでlookupからNoneがか返ってきた時
-            return render_template("quote.html", error_message="Any errors have occurred.")
+            return render_template(
+                "quote.html", error_message="Any errors have occurred."
+            )
 
         return render_template("quote.html", quote=quote)
     # GET
@@ -177,58 +179,6 @@ def quote():
 def buy():
     """Buy shares of stock"""
     return order("buy")
-    # if request.method == "POST":
-    #     shares = request.form.get("shares")
-    #     symbol = request.form.get("symbol")
-    #     quote = lookup(symbol)
-    #     # ガード
-    #     if not symbol or quote == 'Invaild Symbol':
-    #         return apology('Please enter correct symbol')
-    #     elif not shares:
-    #         return apology('Please enter shares')
-    #     elif quote is None:
-    #         # 何かしらのエラーでlookupからNoneがか返ってきた時
-    #         return render_template("buy.html", message="Any errors have occurred.")
-
-    #     # 正常系
-    #     db = get_db()
-    #     curs = db.cursor()
-    #     curs.execute(f'SELECT * FROM users WHERE id="{session["user_id"]}"')
-    #     user = curs.fetchone()
-    #     # 計算での型はfloatで統一
-    #     user["cash"] = float(user["cash"])
-    #     shares = float(shares)
-
-    #     if user["cash"] < shares * quote["price"]:
-    #         return render_template("buy.html", message="You don't have enough cash")
-
-    #     try:
-    #         user["cash"] -= shares * quote["price"]
-    #         record = (
-    #             session["user_id"], "buy", shares, quote["price"],
-    #             quote["name"], quote["symbol"], datetime.datetime.now()
-    #         )
-    #         curs.execute(
-    #             'INSERT INTO transaction_records(user_id, action, shares, price,'
-    #             'company_name, symbol, transaction_datetime) values(?,?,?,?,?,?,?)',
-    #             record
-    #         )
-    #         curs.execute(
-    #             'UPDATE users SET cash=? WHERE id=?',
-    #             (user["cash"], session["user_id"])
-    #         )
-    #     except Exception as e:
-    #         print(e)
-    #         user["cash"] += shares * quote["price"]
-    #         db.rollback()
-    #     finally:
-    #         db.commit()
-
-    #     return render_template("buy.html", message="The deal is done")
-
-    # # GET
-    # else:
-    #     return render_template("buy.html")
 
 
 @app.route("/sell", methods=["GET", "POST"])
@@ -236,64 +186,6 @@ def buy():
 def sell():
     """Sell shares of stock"""
     return order("sell")
-    # if request.method == "POST":
-    #     shares = request.form.get("shares")
-    #     symbol = request.form.get("symbol")
-    #     stocks = call_stocks()
-    #     # ガード
-    #     if not symbol:
-    #         return apology('Please choose a company')
-    #     elif not shares:
-    #         return apology('Please enter shares')
-    #     for stock in stocks:
-    #         if stock['symbol'] == symbol:
-    #             if float(shares) > stock['shares']:
-    #                 return apology('The order volume exceeds the portfolio shares')
-
-    #     quote = lookup(symbol)
-    #     if quote is None:
-    #         # 何かしらのエラーでlookupからNoneがか返ってきた時
-    #         return render_template("buy.html", message="Any errors have occurred.")
-
-    #     # データベース接続し売る処理
-    #     db = get_db()
-    #     curs = db.cursor()
-    #     curs.execute(f'SELECT * FROM users WHERE id="{session["user_id"]}"')
-    #     user = curs.fetchone()
-    #     # 計算での型はfloatで統一
-    #     user["cash"] = float(user["cash"])
-    #     shares = float(shares)
-
-    #     try:
-    #         user["cash"] += shares * quote["price"]
-    #         record = (
-    #             session["user_id"], "sell", -1 * shares, quote["price"],
-    #             quote["name"], quote["symbol"], datetime.datetime.now()
-    #         )
-    #         curs.execute(
-    #             'INSERT INTO transaction_records(user_id, action, shares, price,'
-    #             'company_name, symbol, transaction_datetime) values(?,?,?,?,?,?,?)',
-    #             record
-    #         )
-    #         curs.execute(
-    #             'UPDATE users SET cash=? WHERE id=?',
-    #             (user["cash"], session["user_id"])
-    #         )
-    #     except Exception as e:
-    #         print(e)
-    #         user["cash"] -= shares * quote["price"]
-    #         db.rollback()
-    #     finally:
-    #         db.commit()
-
-    #     return render_template("sell.html", message="The deal is done")
-    # # GET
-    # else:
-    #     stocks = call_stocks()
-    #     if not stocks:
-    #         return render_template("index.html", message="You don't have any stocks yet")
-
-    #     return render_template("sell.html", stocks=stocks)
 
 
 @app.route("/history")
@@ -317,6 +209,7 @@ def call_stocks():
         f' FROM transaction_records WHERE user_id="{session["user_id"]}"'
         'GROUP BY symbol'
     )
+    # 全て売り終わったあと、stock['shares']が0のものは表示しない
     return [stock for stock in curs.fetchall() if stock['shares']]
 
 
@@ -349,6 +242,7 @@ def calculate_cash_total(stocks):
     return cash_total
 
 
+# リファクタリングまだ
 def order(type):
     """Buy shares of stock or Sell shares of stock"""
     if request.method == "POST":
@@ -406,6 +300,7 @@ def order(type):
                     session["user_id"], "sell", -1 * shares, quote["price"],
                     quote["name"], quote["symbol"], datetime.datetime.now()
                 )
+
             curs.execute(
                 'INSERT INTO transaction_records(user_id, action, shares, price,'
                 'company_name, symbol, transaction_datetime) values(?,?,?,?,?,?,?)',
