@@ -242,7 +242,7 @@ def calculate_all_assets(stocks):
     return all_assets
 
 
-def order(type):
+def order(action):
     """Buy shares of stock or Sell shares of stock"""
     if request.method == "POST":
         shares = request.form.get("shares")
@@ -250,8 +250,14 @@ def order(type):
         # 正常系の行までガード節
         if not shares:
             return apology("Please enter shares")
+        else:
+            try:
+                shares = int(shares)
+            except Exception as e:
+                print(e)
+                return apology("Invalid shares")
 
-        if type == "buy":
+        if action == "buy":
             quote = lookup(symbol)
             if not symbol or quote == "Invaild Symbol":
                 return apology("Please enter correct symbol")
@@ -274,15 +280,12 @@ def order(type):
         curs = db.cursor()
         curs.execute(f'SELECT * FROM users WHERE id="{session["user_id"]}"')
         user = curs.fetchone()
-        # 計算での型はfloatで統一
-        user["cash"] = float(user["cash"])
-        shares = float(shares)
 
-        if type == "buy" and user["cash"] < shares * quote["price"]:
+        if action == "buy" and user["cash"] < shares * quote["price"]:
             return render_template("buy.html", message="You don't have enough cash")
 
         try:
-            if type == "buy":
+            if action == "buy":
                 user["cash"] -= shares * quote["price"]
                 code_shares = shares
             # sell
@@ -291,7 +294,7 @@ def order(type):
                 user["cash"] += shares * quote["price"]
 
             record = (
-                session["user_id"], type, code_shares, quote["price"],
+                session["user_id"], action, code_shares, quote["price"],
                 quote["name"], quote["symbol"],
                 datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             )
@@ -306,7 +309,7 @@ def order(type):
             )
         except Exception as e:
             print(e)
-            if type == "buy":
+            if action == "buy":
                 user["cash"] += shares * quote["price"]
             # sell
             else:
@@ -316,10 +319,10 @@ def order(type):
         finally:
             db.commit()
 
-        return render_template(f"{type}.html", message="The deal is done")
+        return render_template(f"{action}.html", message="The deal is done")
     # GET
     else:
-        if type == "buy":
+        if action == "buy":
             return render_template("buy.html")
         # sell
         else:
