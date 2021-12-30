@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Quit
+{% endblock %}
+
+{% block main %}
+    <form action="/quit" method="post">
+        <div class="form-group">
+            <input autocomplete="off" autofocus class="form-control" name="password" placeholder="Enter your password" type="password">
+        </div>
+        <button class="btn btn-danger" type="submit">Quit</button>
+    </form>
+{% endblock %}

@@ -1,3 +1,4 @@
+from crypt import methods
 import datetime
 import os
 from tempfile import mkdtemp
@@ -205,6 +206,33 @@ def history():
         )
 
     return render_template("history.html", transaction_records=transaction_records)
+
+
+@app.route("/quit", methods=["GET", "POST"])
+@login_required
+def quit():
+    """オリジナル機能: ユーザーの退会処理"""
+    if request.method == "POST":
+        db = get_db()
+        curs = db.cursor()
+        curs.execute(
+            'SELECT hash FROM users WHERE id=?', (session["user_id"],)
+        )
+        password = request.form.get("password")
+        if not password or not check_password_hash(curs.fetchone()["hash"], password):
+            return apology("Invalid password", 403)
+
+        try:
+            curs.execute('DELETE FROM users WHERE id=?', (session["user_id"],))
+            del session["user_id"]
+        except Exception as e:
+            print(e)
+            db.rollback()
+        finally:
+            db.commit()
+        return redirect("/")
+    else:
+        return render_template("quit.html")
 
 
 # サポート関数群
