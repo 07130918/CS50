@@ -197,13 +197,17 @@ def history():
 
 # サポート関数群
 def find_user_by(user_name, curs):
-    curs.execute(f'SELECT * FROM users WHERE username="{user_name}"')
+    curs.execute('SELECT * FROM users WHERE username=?', (user_name,))
     return curs.fetchone()
 
 
 def call_stocks():
     db = get_db()
     curs = db.cursor()
+    # curs.execute(
+    #     'SELECT symbol, company_name as name, SUM(shares) as shares'
+    #     'FROM transaction_records WHERE user_id=? GROUP BY symbol', (user_id,)
+    # )
     curs.execute(
         'SELECT symbol, company_name as name, SUM(shares) as shares'
         f' FROM transaction_records WHERE user_id="{session["user_id"]}"'
@@ -224,7 +228,7 @@ def call_portfolio(stocks):
 
 
 def call_cash(curs):
-    curs.execute(f'SELECT cash FROM users WHERE id="{session["user_id"]}"')
+    curs.execute('SELECT cash FROM users WHERE id=?', (session["user_id"],))
     return curs.fetchone()["cash"]
 
 
@@ -278,7 +282,7 @@ def order(action):
         # 正常系
         db = get_db()
         curs = db.cursor()
-        curs.execute(f'SELECT * FROM users WHERE id="{session["user_id"]}"')
+        curs.execute('SELECT * FROM users WHERE id=?', (session["user_id"],))
         user = curs.fetchone()
 
         if action == "buy" and user["cash"] < shares * quote["price"]:
@@ -304,8 +308,7 @@ def order(action):
                 record
             )
             curs.execute(
-                'UPDATE users SET cash=? WHERE id=?',
-                (user["cash"], session["user_id"])
+                'UPDATE users SET cash=? WHERE id=?', (user["cash"], session["user_id"])
             )
         except Exception as e:
             print(e)
