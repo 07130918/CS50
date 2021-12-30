@@ -267,7 +267,7 @@ def order(action):
             if not symbol:
                 return apology("Please choose a company")
             for stock in stocks:
-                if stock["symbol"] == symbol and float(shares) > stock["shares"]:
+                if stock["symbol"] == symbol and shares > stock["shares"]:
                     return apology("The order volume exceeds the portfolio shares")
 
             quote = lookup(symbol)
