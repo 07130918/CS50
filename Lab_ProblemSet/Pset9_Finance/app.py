@@ -192,7 +192,19 @@ def sell():
 @login_required
 def history():
     """Show history of transactions"""
-    return apology("TODO")
+    db = get_db()
+    curs = db.cursor()
+    curs.execute(
+        """SELECT symbol, action, shares, price, transaction_datetime as t_time
+        FROM transaction_records WHERE user_id=?""", (session["user_id"],)
+    )
+    transaction_records = curs.fetchall()
+    if not transaction_records:
+        return render_template(
+            "history.html", message="You haven't bought or sold yet."
+        )
+
+    return render_template("history.html", transaction__records=transaction_records)
 
 
 # サポート関数群

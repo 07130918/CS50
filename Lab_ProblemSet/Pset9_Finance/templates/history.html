@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    History
+{% endblock %}
+
+{% block main %}
+<table class="table tablestriped">
+    <thead>
+        <tr>
+            <th class="text-start">Symbol</th>
+            <th class="text-start">Order</th>
+            <th class="text-end">Shares</th>
+            <th class="text-end">Price</th>
+            <th class="text-end">Transacted</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% if stocks %}
+        {% for stock in stocks %}
+        <tr>
+            <td class="text-start">{{ stock["symbol"] }}</td>
+            <td class="text-start">{{ stock["name"] }}</td>
+            <td class="text-end">{{ stock["shares"] | int }}</td>
+            <td class="text-end">{{ stock["current_price"] | usd }}</td>
+            <td class="text-end">{{ stock["total"] | usd }}</td>
+        </tr>
+        {% endfor %}
+        {% endif %}
+    </tbody>
+</table>
+    <!-- まだ何も株を買っていないとき -->
+    {% if message %}
+        <h2 class="message">{{ message }}</h2>
+    {% endif %}
+{% endblock %}
