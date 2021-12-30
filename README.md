@@ -18,15 +18,26 @@
 ```
   スクラブル
   シーザー暗号
-  world_cup
-    pythonでワールドカップシュミレーション
   置換暗号
   お釣り計算(再帰使用)
+  クレジットカード番号から会社を特定
   Coleman Liauの解読レベル
-  DNA
-    DNA塩基配列から個人を特定(再帰使用)
+  マリオ
+  Lab6_World_Cup
+    pythonでワールドカップシュミレーション
   Lab7_SQL
     SQL操作
+  Lab8_FrontEnd
+    JavaScriptを使ったクイズ
+  Lab9_Flask
+    誕生日等の情報を投稿できるwebアプリ
+  Pset6_DNA
+    DNA塩基配列から個人を特定(再帰使用)
+  Pset7_SQL
+    映画情報を取得、データ加工
+    SQLを使って推理ゲームを解く
+  Pset9_Finance
+    Flaskを使用、APIに接続し株の売買を行えるwebアプリ
 ```
 ## HTTP
 ![Screen Shot 2021-11-23 at 10 37 16](https://user-images.githubusercontent.com/70265286/142959796-b60174a3-b52c-45b1-abb2-f402dd9976ff.jpg)
