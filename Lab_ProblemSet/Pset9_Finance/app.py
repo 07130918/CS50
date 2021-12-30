@@ -204,14 +204,10 @@ def find_user_by(user_name, curs):
 def call_stocks():
     db = get_db()
     curs = db.cursor()
-    # curs.execute(
-    #     'SELECT symbol, company_name as name, SUM(shares) as shares'
-    #     'FROM transaction_records WHERE user_id=? GROUP BY symbol', (user_id,)
-    # )
     curs.execute(
-        'SELECT symbol, company_name as name, SUM(shares) as shares'
-        f' FROM transaction_records WHERE user_id="{session["user_id"]}"'
-        'GROUP BY symbol'
+        """SELECT symbol, company_name as name, SUM(shares) as shares
+        FROM transaction_records WHERE user_id=? GROUP BY symbol""",
+        (session["user_id"],)
     )
     # 全て売り終わったあと、stock['shares']が0のものは表示しない
     return [stock for stock in curs.fetchall() if stock['shares']]
@@ -303,8 +299,8 @@ def order(action):
                 datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             )
             curs.execute(
-                'INSERT INTO transaction_records(user_id, action, shares, price,'
-                'company_name, symbol, transaction_datetime) values(?,?,?,?,?,?,?)',
+                """INSERT INTO transaction_records(user_id, action, shares, price,
+                company_name, symbol, transaction_datetime) values(?,?,?,?,?,?,?)""",
                 record
             )
             curs.execute(
