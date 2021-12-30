@@ -1,4 +1,3 @@
-from crypt import methods
 import datetime
 import os
 from tempfile import mkdtemp
