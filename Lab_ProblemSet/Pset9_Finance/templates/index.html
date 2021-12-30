@@ -16,8 +16,8 @@
             </tr>
         </thead>
        <tbody>
-           {% if stocks %}
-            {% for stock in stocks %}
+            {% if stocks %}
+                {% for stock in stocks %}
                     <tr>
                         <td class="text-start">{{ stock["symbol"] }}</td>
                         <td class="text-start">{{ stock["name"] }}</td>
