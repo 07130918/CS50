@@ -204,7 +204,7 @@ def history():
             "history.html", message="You haven't bought or sold yet."
         )
 
-    return render_template("history.html", transaction__records=transaction_records)
+    return render_template("history.html", transaction_records=transaction_records)
 
 
 # サポート関数群

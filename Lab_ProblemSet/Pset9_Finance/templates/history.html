@@ -16,16 +16,16 @@
         </tr>
     </thead>
     <tbody>
-        {% if stocks %}
-        {% for stock in stocks %}
-        <tr>
-            <td class="text-start">{{ stock["symbol"] }}</td>
-            <td class="text-start">{{ stock["name"] }}</td>
-            <td class="text-end">{{ stock["shares"] | int }}</td>
-            <td class="text-end">{{ stock["current_price"] | usd }}</td>
-            <td class="text-end">{{ stock["total"] | usd }}</td>
-        </tr>
-        {% endfor %}
+        {% if transaction_records %}
+            {% for t_record in transaction_records %}
+            <tr>
+                <td class="text-start">{{ t_record["symbol"] }}</td>
+                <td class="text-start">{{ t_record["action"] }}</td>
+                <td class="text-end">{{ t_record["shares"] | int | abs }}</td>
+                <td class="text-end">{{ t_record["price"] | usd }}</td>
+                <td class="text-end">{{ t_record["t_time"] }}</td>
+            </tr>
+            {% endfor %}
         {% endif %}
     </tbody>
 </table>
