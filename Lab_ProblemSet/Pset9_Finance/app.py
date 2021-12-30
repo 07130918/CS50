@@ -249,21 +249,20 @@ def order(type):
         symbol = request.form.get("symbol")
         # 正常系の行までガード節
         if not shares:
-            return apology('Please enter shares')
+            return apology("Please enter shares")
 
         if type == "buy":
             quote = lookup(symbol)
-            if not symbol or quote == 'Invaild Symbol':
-                return apology('Please enter correct symbol')
+            if not symbol or quote == "Invaild Symbol":
+                return apology("Please enter correct symbol")
         # sell
         else:
             stocks = call_stocks()
             if not symbol:
-                return apology('Please choose a company')
+                return apology("Please choose a company")
             for stock in stocks:
-                if stock['symbol'] == symbol:
-                    if float(shares) > stock['shares']:
-                        return apology('The order volume exceeds the portfolio shares')
+                if stock["symbol"] == symbol and float(shares) > stock["shares"]:
+                    return apology("The order volume exceeds the portfolio shares")
 
             quote = lookup(symbol)
         if quote is None:
