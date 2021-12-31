@@ -3,8 +3,7 @@ import requests
 import sqlite3
 import urllib.parse
 
-from flask import g
-from flask import redirect, render_template, session
+from flask import g, redirect, render_template, session
 from functools import wraps
 
 
@@ -18,9 +17,7 @@ def get_db():
 
 
 def dict_factory(cursor, row):
-    """
-        取得レコードをtuple型からdict型に変換
-    """
+    """取得レコードをtuple型からdict型に変換"""
     d = {}
     for idx, col in enumerate(cursor.description):
         d[col[0]] = row[idx]

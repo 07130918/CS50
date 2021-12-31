@@ -42,9 +42,7 @@ if not os.environ.get("API_KEY"):
 
 @app.teardown_appcontext
 def close_connection(exception):
-    """
-        @app.teardown_appcontextでアプリ開始時にDB接続,終了時にDB接続を切る
-    """
+    """@app.teardown_appcontextでアプリ開始時にDB接続,終了時にDB接続を切る"""
     db = getattr(g, '_database', None)
     if db is not None:
         db.close()
@@ -65,11 +63,11 @@ def register():
         if find_user_by(user_name, curs):
             return apology("Username already exists", 403)
         elif not user_name:
-            return apology("must provide username", 403)
+            return apology("Must provide username", 403)
         elif not password:
-            return apology("must provide password", 403)
+            return apology("Must provide password", 403)
         elif not password_again:
-            return apology("must provide password(again)", 403)
+            return apology("Must provide password(again)", 403)
         elif password != password_again:
             return apology("Password and confirmation password are different.", 403)
 
@@ -105,9 +103,9 @@ def login():
         password = request.form.get("password")
         # Ensure username was submitted
         if not user_name:
-            return apology("must provide username", 403)
+            return apology("Must provide username", 403)
         elif not password:
-            return apology("must provide password", 403)
+            return apology("Must provide password", 403)
 
         # Query database for username
         db = get_db()
@@ -165,7 +163,7 @@ def quote():
         elif quote is None:
             # 何かしらのエラーでlookupからNoneがか返ってきた時
             return render_template(
-                "quote.html", error_message="Any errors have occurred."
+                "quote.html", error_message="Any errors have occurred"
             )
 
         return render_template("quote.html", quote=quote)
@@ -196,13 +194,12 @@ def history():
     curs = db.cursor()
     curs.execute(
         """SELECT symbol, action, shares, price, transaction_datetime as t_time
-        FROM transaction_records WHERE user_id=?""", (session["user_id"],)
+        FROM transaction_records WHERE user_id=? ORDER BY t_time DESC""",
+        (session["user_id"],)
     )
     transaction_records = curs.fetchall()
     if not transaction_records:
-        return render_template(
-            "history.html", message="You haven't bought or sold yet."
-        )
+        return render_template("history.html", message="You haven't bought or sold yet")
 
     return render_template("history.html", transaction_records=transaction_records)
 
@@ -214,9 +211,7 @@ def quit():
     if request.method == "POST":
         db = get_db()
         curs = db.cursor()
-        curs.execute(
-            'SELECT hash FROM users WHERE id=?', (session["user_id"],)
-        )
+        curs.execute('SELECT hash FROM users WHERE id=?', (session["user_id"],))
         password = request.form.get("password")
         if not password or not check_password_hash(curs.fetchone()["hash"], password):
             return apology("Invalid password", 403)
@@ -296,20 +291,18 @@ def order(action):
                 print(e)
                 return apology("Invalid shares")
 
+        quote = lookup(symbol)
         if action == "buy":
-            quote = lookup(symbol)
             if not symbol or quote == "Invaild Symbol":
                 return apology("Please enter correct symbol")
         # sell
         else:
-            stocks = call_stocks()
             if not symbol:
                 return apology("Please choose a company")
-            for stock in stocks:
+            for stock in call_stocks():
                 if stock["symbol"] == symbol and shares > stock["shares"]:
                     return apology("The order volume exceeds the portfolio shares")
 
-            quote = lookup(symbol)
         if quote is None:
             # 何かしらのエラーでlookupからNoneがか返ってきた時
             return render_template("buy.html", message="Any errors have occurred.")
@@ -329,13 +322,12 @@ def order(action):
                 code_shares = shares
             # sell
             else:
-                code_shares = -1 * shares
                 user["cash"] += shares * quote["price"]
+                code_shares = -1 * shares
 
             record = (
-                session["user_id"], action, code_shares, quote["price"],
-                quote["name"], quote["symbol"],
-                datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                session["user_id"], action, code_shares, quote["price"], quote["name"],
+                quote["symbol"], datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             )
             curs.execute(
                 """INSERT INTO transaction_records(user_id, action, shares, price,
