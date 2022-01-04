@@ -218,7 +218,7 @@ def quit():
 
         try:
             curs.execute('DELETE FROM users WHERE id=?', (session["user_id"],))
-            del session["user_id"]
+            session.clear()
         except Exception as e:
             print(e)
             db.rollback()
