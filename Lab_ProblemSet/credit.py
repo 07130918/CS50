@@ -40,7 +40,7 @@ def find_company(credit_card_number):
     elif int(credit_card_number[0]) == 5 and int(credit_card_number[1]) in range(1, 6):
         return 'Master'
     elif int(credit_card_number[0]) == 4:
-        return'Visa'
+        return 'Visa'
 
 
 if __name__ == '__main__':

@@ -1,21 +1,14 @@
 def main():
-    height = 10
-    while height > 8 and type(height) is not str:
-        print('height: ', end='')
-        height = int(input())
-    return draw(height)
+    height = int(input("height: ").strip())
+    draw(height)
 
-
-def draw(height):
-    # basecase
-    if(height == 0):
+def draw(h: int):
+    # Never forget the base case in recursion
+    if h == 0:
         return
 
-    draw(height - 1)
-    for _ in range(height):
-        print("■", end='')
-    print()
+    draw(h - 1)
+    print("■" * h)
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
