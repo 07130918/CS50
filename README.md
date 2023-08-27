@@ -1,4 +1,4 @@
-# [CS50](https://cs50.jp/)
+# [CS50.jp](https://cs50.jp/)
 ## [YouTube Playlist](https://youtube.com/playlist?list=PLkxRaGG5EB7pF5cnc4UBra8TVxsufn7zT&si=iA7_LG360f1TaxGt)
 ## [Comparison Sorting Algorithms](https://www.cs.usfca.edu/~galles/visualization/ComparisonSort.html)
 
